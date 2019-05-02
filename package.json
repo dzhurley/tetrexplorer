@@ -1,0 +1,17 @@
+{
+  "name": "tetrexplorer",
+  "version": "1.0.0",
+  "description": "a tetrahedron exploring the meshy world around it",
+  "scripts": {
+    "prepare": "pika-web --clean --optimize",
+    "dev": "serve ./"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "three": "0.104.0"
+  },
+  "devDependencies": {
+    "@pika/web": "0.4.2",
+    "serve": "11.0.0"
+  }
+}
