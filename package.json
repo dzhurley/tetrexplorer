@@ -8,7 +8,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "three": "0.104.0"
+    "three": "0.104.0",
+    "threejs-orbit-controls": "1.0.3"
   },
   "devDependencies": {
     "@pika/web": "0.4.2",

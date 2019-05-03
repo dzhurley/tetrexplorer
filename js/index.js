@@ -1,51 +1,30 @@
-import * as THREE from '../web_modules/three.js';
+import { camera, controls, render, scene } from './setup.js';
+import { plane, tetra } from './meshes.js';
 
-let screenWidth = window.innerWidth;
-let screenHeight = window.innerHeight;
-
-const scene = new THREE.Scene();
-const camera = new THREE.OrthographicCamera(
-    screenWidth / -2,
-    screenWidth / 2,
-    screenHeight / 2,
-    screenHeight / -2,
-    -1000,
-    1000,
-);
-
-const renderer = new THREE.WebGLRenderer({
-    alpha: true,
-    antialias: true,
-});
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-const onWindowResize = () => {
-    screenWidth = window.innerWidth;
-    screenHeight = window.innerHeight;
-    renderer.setSize(screenWidth, screenHeight);
-    camera.updateProjectionMatrix();
-    camera.left = screenWidth / -2;
-    camera.right = screenWidth / 2;
-    camera.top = screenHeight / 2;
-    camera.bottom = screenHeight / -2;
-    camera.updateProjectionMatrix();
-};
-window.addEventListener('resize', onWindowResize, false);
-
-const geometry = new THREE.TetrahedronBufferGeometry(100, 0);
-const material = new THREE.MeshNormalMaterial();
-const tetra = new THREE.Mesh(geometry, material);
+scene.add(plane);
 scene.add(tetra);
 
-const animate = () => {
+const animate = time => {
     requestAnimationFrame(animate);
 
-    tetra.rotation.x += 0.01;
-    tetra.rotation.y += 0.01;
+    const delta = Math.sin(time / 100) * 0.1;
+    const dx = 0.1;
+    const dy = 0.1;
+    const dz = delta;
 
-    renderer.render(scene, camera);
+    tetra.position.x += dx;
+    tetra.position.y += dy;
+    tetra.position.z += dz;
+
+    camera.position.x += dx;
+    camera.position.y += dy;
+    camera.position.z += dz;
+
+    controls.target.x += dx;
+    controls.target.y += dy;
+    controls.target.z += dz;
+
+    render();
 };
 
-animate();
+animate(0);
