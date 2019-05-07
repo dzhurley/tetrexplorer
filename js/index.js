@@ -1,29 +1,24 @@
-import { camera, controls, render, scene } from './setup.js';
+import { Vector3 } from '../web_modules/three-full.js';
+import { update as updateTween } from '../web_modules/es6-tween.js';
+
+import { render, scene } from './setup.js';
 import { plane, tetra } from './meshes.js';
 
-scene.add(plane);
+import { flip, atRest } from './behaviors.js';
+
 scene.add(tetra);
+scene.add(plane);
 
 const animate = time => {
     requestAnimationFrame(animate);
-
-    const delta = Math.sin(time / 100) * 0.1;
-    const dx = 0.1;
-    const dy = 0.1;
-    const dz = delta;
-
-    tetra.position.x += dx;
-    tetra.position.y += dy;
-    tetra.position.z += dz;
-
-    camera.position.x += dx;
-    camera.position.y += dy;
-    camera.position.z += dz;
-
-    controls.target.x += dx;
-    controls.target.y += dy;
-    controls.target.z += dz;
-
+    if (atRest()) {
+        flip(
+            tetra,
+            new Vector3(10, 10, 10).normalize(),
+            new Vector3(1, 0, 0),
+        );
+    }
+    updateTween(time);
     render();
 };
 

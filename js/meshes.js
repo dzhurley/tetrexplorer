@@ -1,11 +1,16 @@
-import * as THREE from '../web_modules/three.js';
+import {
+    Mesh,
+    MeshNormalMaterial,
+    PlaneBufferGeometry,
+    TetrahedronGeometry,
+} from '../web_modules/three-full.js';
 
-export const plane = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(500, 500, 50, 50),
-    new THREE.MeshNormalMaterial({ wireframe: true }),
+export const plane = new Mesh(
+    new PlaneBufferGeometry(1000, 1000, 25, 25),
+    new MeshNormalMaterial({ wireframe: true }),
 );
 
-export const tetra = new THREE.Mesh(
-    new THREE.TetrahedronBufferGeometry(10, 0),
-    new THREE.MeshNormalMaterial(),
+export const tetra = new Mesh(
+    new TetrahedronGeometry(50, 0),
+    new MeshNormalMaterial(),
 );

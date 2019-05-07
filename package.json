@@ -1,5 +1,5 @@
 {
-  "name": "tetrexplorer",
+  "name": "tetraxplorer",
   "version": "1.0.0",
   "description": "a tetrahedron exploring the meshy world around it",
   "scripts": {
@@ -8,8 +8,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "three": "0.104.0",
-    "threejs-orbit-controls": "1.0.3"
+    "es6-tween": "5.5.2",
+    "three-full": "17.1.0"
   },
   "devDependencies": {
     "@pika/web": "0.4.2",
