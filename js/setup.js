@@ -32,6 +32,7 @@ const onWindowResize = () => {
 window.addEventListener('resize', onWindowResize, false);
 
 export const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableKeys = false;
 // controls.enableZoom = false;
 // controls.enablePan = false;
 
