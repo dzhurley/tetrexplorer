@@ -11,7 +11,9 @@ let aspect = screenWidth / screenHeight;
 
 export const scene = new Scene();
 export const camera = new PerspectiveCamera(75, aspect, 0.1, 1000);
-camera.position.z = 500;
+camera.position.x = 30;
+camera.position.y = 30;
+camera.position.z = 30;
 
 export const renderer = new WebGLRenderer({
     alpha: true,
