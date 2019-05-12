@@ -12,8 +12,7 @@ const tetra = new Mesh(
     new TetrahedronGeometry(10, 0),
     new MeshNormalMaterial(),
 );
-
-export const pivots = {};
+tetra.name = 'tetra';
 
 const addPivots = () => {
     const v = new Vector3();
@@ -27,10 +26,10 @@ const addPivots = () => {
 
             v.copy(b).add(a).divideScalar(2);
             const pivot = new Mesh(pivotGeo, pivotMat);
+            pivot.name = `pivot-${[i, j]}`;
             pivot.position.copy(v);
             // pivot rotation
             pivot.updateMatrixWorld();
-            pivots[[i, j]] = pivot;
             shape.add(pivot);
         }
     }
