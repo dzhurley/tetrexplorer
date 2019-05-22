@@ -1,5 +1,5 @@
 import {
-    AxesHelper,
+    ArrowHelper,
     BoxBufferGeometry,
     Group,
     Mesh,
@@ -37,8 +37,14 @@ const addPivots = () => {
             pivot.name = `pivot-${[i, j]}`;
             pivot.position.copy(v);
             pivot.updateMatrixWorld();
-            pivot.add(new AxesHelper(10));
+
             shape.add(pivot);
+
+            shape.add(new ArrowHelper(
+                b.clone().sub(a).normalize(),
+                pivot.position,
+                20,
+            ));
         }
     }
 };
