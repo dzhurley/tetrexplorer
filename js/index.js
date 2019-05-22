@@ -1,11 +1,11 @@
 import { update as updateTween } from '../web_modules/es6-tween.js';
 
 import { render, scene } from './setup.js';
-import { shape } from './meshes.js';
+import { plane, shape } from './meshes.js';
 
 import { flip, atRest } from './behaviors.js';
 
-scene.add(shape);
+scene.add(plane, shape);
 
 const animate = time => {
     requestAnimationFrame(animate);
@@ -13,7 +13,7 @@ const animate = time => {
         flip(shape);
     }
     updateTween(time);
-    render();
+    render(shape);
 };
 
 animate(0);

@@ -1,12 +1,20 @@
 import {
+    AxesHelper,
     BoxBufferGeometry,
     Group,
     Mesh,
     MeshBasicMaterial,
     MeshNormalMaterial,
+    PlaneBufferGeometry,
     TetrahedronGeometry,
     Vector3,
 } from '../web_modules/three-full.js';
+
+export const plane = new Mesh(
+    new PlaneBufferGeometry(500, 500, 50, 50),
+    new MeshNormalMaterial({ wireframe: true }),
+);
+plane.name = 'plane';
 
 const tetra = new Mesh(
     new TetrahedronGeometry(10, 0),
@@ -28,8 +36,8 @@ const addPivots = () => {
             const pivot = new Mesh(pivotGeo, pivotMat);
             pivot.name = `pivot-${[i, j]}`;
             pivot.position.copy(v);
-            // pivot rotation
             pivot.updateMatrixWorld();
+            pivot.add(new AxesHelper(10));
             shape.add(pivot);
         }
     }
