@@ -1,9 +1,6 @@
 import {
-    ArrowHelper,
-    BoxBufferGeometry,
     Group,
     Mesh,
-    MeshBasicMaterial,
     MeshNormalMaterial,
     PlaneBufferGeometry,
     TetrahedronGeometry,
@@ -24,8 +21,7 @@ tetra.name = 'tetra';
 
 const addPivots = () => {
     const v = new Vector3();
-    const pivotGeo = new BoxBufferGeometry(1, 1, 1);
-    const pivotMat = new MeshBasicMaterial();
+    const up = new Vector3(0, 1, 0).normalize();
 
     for (let i = 0; i < tetra.geometry.vertices.length; i++) {
         for (let j = i + 1; j < tetra.geometry.vertices.length; j++) {
@@ -33,18 +29,12 @@ const addPivots = () => {
             const b = tetra.geometry.vertices[j];
 
             v.copy(b).add(a).divideScalar(2);
-            const pivot = new Mesh(pivotGeo, pivotMat);
+            const pivot = new Mesh();
             pivot.name = `pivot-${[i, j]}`;
             pivot.position.copy(v);
+            pivot.quaternion.setFromUnitVectors(up, b.clone().sub(a).normalize());
             pivot.updateMatrixWorld();
-
             shape.add(pivot);
-
-            shape.add(new ArrowHelper(
-                b.clone().sub(a).normalize(),
-                pivot.position,
-                20,
-            ));
         }
     }
 };

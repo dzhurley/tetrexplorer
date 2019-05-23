@@ -1,4 +1,4 @@
-import { SceneUtils } from '../web_modules/three-full.js';
+import { Object3D, Quaternion, SceneUtils } from '../web_modules/three-full.js';
 import { Easing, Tween } from '../web_modules/es6-tween.js';
 
 import { scene } from './setup.js';
@@ -33,6 +33,7 @@ const setPivotPoint = (mesh, lastKey) => {
     flipping = true;
     activePivot = scene.getObjectByName(keyMapping[lastKey]).clone();
     activePivot.position.setFromMatrixPosition(activePivot.matrixWorld);
+    activePivot.quaternion.setFromRotationMatrix(activePivot.matrixWorld);
     activePivot.updateMatrixWorld();
     scene.add(activePivot);
     SceneUtils.attach(mesh, scene, activePivot);
@@ -46,16 +47,21 @@ const removeFromPivot = mesh => {
     }
 };
 
+const endObject = new Object3D();
 export const flip = mesh => {
     const lastKey = keyPressed;
     setPivotPoint(mesh, lastKey);
 
+    const start = activePivot.quaternion.clone();
+    endObject.quaternion.copy(start);
+    endObject.rotateOnAxis(activePivot.up, Math.PI / 2);
+
     let o = { t: 0 };
     new Tween(o)
-        .to({ t: Math.PI / 2 }, 500)
+        .to({ t: 1 }, 500)
         .easing(Easing.Bounce.Out)
         .on('update', () => {
-            activePivot.rotation.x = -o.t;
+            Quaternion.slerp(start, endObject.quaternion, activePivot.quaternion, o.t);
         })
         .on('complete', () => removeFromPivot(mesh))
         .start();
