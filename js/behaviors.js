@@ -7,62 +7,62 @@ let keyPressed = '';
 let flipping = false;
 
 const keyMapping = {
-    'Digit1': 'pivot-0,1',
-    'Digit2': 'pivot-0,2',
-    'Digit3': 'pivot-0,3',
-    'Digit4': 'pivot-1,2',
-    'Digit5': 'pivot-1,3',
-    'Digit6': 'pivot-2,3',
+  'Digit1': 'pivot-0,1',
+  'Digit2': 'pivot-0,2',
+  'Digit3': 'pivot-0,3',
+  'Digit4': 'pivot-1,2',
+  'Digit5': 'pivot-1,3',
+  'Digit6': 'pivot-2,3',
 };
 
 export const atRest = () => !flipping && keyPressed.length;
 
 window.addEventListener('keydown', evt => {
-    if (evt.code in keyMapping) {
-        keyPressed = evt.code;
-    }
+  if (evt.code in keyMapping) {
+    keyPressed = evt.code;
+  }
 }, false);
 window.addEventListener('keyup', () => keyPressed = '', false);
 
 let activePivot;
 
 const setPivotPoint = (mesh, lastKey) => {
-    if (flipping) {
-        removeFromPivot();
-    }
-    flipping = true;
-    activePivot = scene.getObjectByName(keyMapping[lastKey]).clone();
-    activePivot.position.setFromMatrixPosition(activePivot.matrixWorld);
-    activePivot.quaternion.setFromRotationMatrix(activePivot.matrixWorld);
-    activePivot.updateMatrixWorld();
-    scene.add(activePivot);
-    SceneUtils.attach(mesh, scene, activePivot);
+  if (flipping) {
+    removeFromPivot();
+  }
+  flipping = true;
+  activePivot = scene.getObjectByName(keyMapping[lastKey]).clone();
+  activePivot.position.setFromMatrixPosition(activePivot.matrixWorld);
+  activePivot.quaternion.setFromRotationMatrix(activePivot.matrixWorld);
+  activePivot.updateMatrixWorld();
+  scene.add(activePivot);
+  SceneUtils.attach(mesh, scene, activePivot);
 };
 
 const removeFromPivot = mesh => {
-    if (flipping) {
-        flipping = false;
-        SceneUtils.detach(mesh, activePivot, scene);
-        scene.remove(activePivot);
-    }
+  if (flipping) {
+    flipping = false;
+    SceneUtils.detach(mesh, activePivot, scene);
+    scene.remove(activePivot);
+  }
 };
 
 const endObject = new Object3D();
 export const flip = mesh => {
-    const lastKey = keyPressed;
-    setPivotPoint(mesh, lastKey);
+  const lastKey = keyPressed;
+  setPivotPoint(mesh, lastKey);
 
-    const start = activePivot.quaternion.clone();
-    endObject.quaternion.copy(start);
-    endObject.rotateOnAxis(activePivot.up, Math.PI / 2);
+  const start = activePivot.quaternion.clone();
+  endObject.quaternion.copy(start);
+  endObject.rotateOnAxis(activePivot.up, Math.PI / 2);
 
-    let o = { t: 0 };
-    new Tween(o)
-        .to({ t: 1 }, 500)
-        .easing(Easing.Bounce.Out)
-        .on('update', () => {
-            Quaternion.slerp(start, endObject.quaternion, activePivot.quaternion, o.t);
-        })
-        .on('complete', () => removeFromPivot(mesh))
-        .start();
+  let o = { t: 0 };
+  new Tween(o)
+    .to({ t: 1 }, 500)
+    .easing(Easing.Bounce.Out)
+    .on('update', () => {
+      Quaternion.slerp(start, endObject.quaternion, activePivot.quaternion, o.t);
+    })
+    .on('complete', () => removeFromPivot(mesh))
+    .start();
 };
