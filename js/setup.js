@@ -32,13 +32,13 @@ const onWindowResize = () => {
 window.addEventListener('resize', onWindowResize, false);
 
 export const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableKeys = false;
 
 export const render = shape => {
-  shape.getWorldPosition(camera.position);
-  camera.position.z += 50;
-  shape.getWorldPosition(controls.target);
-  controls.target.z += 50;
+  // track camera directly overhead at same distance from shape
+  // shape.getWorldPosition(camera.position);
+  // camera.position.z += 50;
+  // shape.getWorldPosition(controls.target);
+  // controls.target.z += 50;
 
   renderer.render(scene, camera);
   controls.update();

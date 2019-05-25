@@ -6,13 +6,14 @@ import { scene } from './setup.js';
 let keyPressed = '';
 let flipping = false;
 
+// corresponds to each edge on tetra
 const keyMapping = {
-  'Digit1': 'pivot-0,1',
-  'Digit2': 'pivot-0,2',
-  'Digit3': 'pivot-0,3',
-  'Digit4': 'pivot-1,2',
-  'Digit5': 'pivot-1,3',
-  'Digit6': 'pivot-2,3',
+  'Digit1': 'pivot-0,1', // red
+  'Digit2': 'pivot-0,2', // green
+  'Digit3': 'pivot-0,3', // blue
+  'Digit4': 'pivot-1,2', // yellow
+  'Digit5': 'pivot-1,3', // magenta
+  'Digit6': 'pivot-2,3', // cyan
 };
 
 export const atRest = () => !flipping && keyPressed.length;
@@ -31,6 +32,10 @@ const setPivotPoint = (mesh, lastKey) => {
     removeFromPivot();
   }
   flipping = true;
+
+  // as all pivots are children of the tetra, copy the position/rotation
+  // of the chosen pivot into a new parent of the tetra that can be tweened
+  // to move the tetra and all pivots as one
   activePivot = scene.getObjectByName(keyMapping[lastKey]).clone();
   activePivot.position.setFromMatrixPosition(activePivot.matrixWorld);
   activePivot.quaternion.setFromRotationMatrix(activePivot.matrixWorld);
@@ -54,7 +59,8 @@ export const flip = mesh => {
 
   const start = activePivot.quaternion.clone();
   endObject.quaternion.copy(start);
-  endObject.rotateOnAxis(activePivot.up, Math.PI / 2);
+  // all pivots are rotated such that 'up' points along a tetra edge
+  endObject.rotateOnAxis(activePivot.up, Math.PI - Math.acos(1 / 3));
 
   let o = { t: 0 };
   new Tween(o)
