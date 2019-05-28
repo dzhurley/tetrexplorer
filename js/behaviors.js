@@ -1,7 +1,15 @@
-import { Object3D, Quaternion, SceneUtils } from '../web_modules/three-full.js';
+import {
+  DoubleSide,
+  Mesh,
+  MeshNormalMaterial,
+  Object3D,
+  Quaternion,
+  SceneUtils,
+} from '../web_modules/three-full.js';
 import { Easing, Tween } from '../web_modules/es6-tween.js';
 
 import { scene } from './setup.js';
+import { tetra } from './meshes.js';
 
 let keyPressed = '';
 let flipping = false;
@@ -52,6 +60,17 @@ const removeFromPivot = mesh => {
   }
 };
 
+const addTrail = () => {
+  const piece = new Mesh(
+    tetra.geometry.clone(),
+    tetra.material.clone(),
+  );
+  piece.material.wireframe = true;
+  piece.position.setFromMatrixPosition(tetra.matrixWorld);
+  piece.quaternion.setFromRotationMatrix(tetra.matrixWorld);
+  scene.add(piece);
+};
+
 const endObject = new Object3D();
 export const flip = mesh => {
   const lastKey = keyPressed;
@@ -69,6 +88,9 @@ export const flip = mesh => {
     .on('update', () => {
       Quaternion.slerp(start, endObject.quaternion, activePivot.quaternion, o.t);
     })
-    .on('complete', () => removeFromPivot(mesh))
+    .on('complete', () => {
+      addTrail();
+      removeFromPivot(mesh);
+    })
     .start();
 };

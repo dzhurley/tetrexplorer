@@ -3,7 +3,6 @@ import {
   Mesh,
   MeshBasicMaterial,
   MeshNormalMaterial,
-  PlaneBufferGeometry,
   SphereBufferGeometry,
   TetrahedronGeometry,
   Vector3,
@@ -59,10 +58,3 @@ shape.quaternion.setFromUnitVectors(
 );
 
 addPivots();
-
-export const plane = new Mesh(
-  new PlaneBufferGeometry(500, 500, 50, 50),
-  new MeshNormalMaterial({ wireframe: true }),
-);
-plane.name = 'plane';
-plane.position.z -= 10 / 3;

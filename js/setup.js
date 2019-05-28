@@ -10,8 +10,8 @@ let screenHeight = window.innerHeight;
 let aspect = screenWidth / screenHeight;
 
 export const scene = new Scene();
-export const camera = new PerspectiveCamera(75, aspect, 0.1, 1000);
-camera.position.z = 50;
+export const camera = new PerspectiveCamera(75, aspect, 0.1, 2000);
+camera.position.z = 500;
 
 export const renderer = new WebGLRenderer({
   alpha: true,
@@ -32,14 +32,10 @@ const onWindowResize = () => {
 window.addEventListener('resize', onWindowResize, false);
 
 export const controls = new OrbitControls(camera, renderer.domElement);
+controls.minDistance = 15;
+controls.maxDistance = 500;
 
-export const render = shape => {
-  // track camera directly overhead at same distance from shape
-  // shape.getWorldPosition(camera.position);
-  // camera.position.z += 50;
-  // shape.getWorldPosition(controls.target);
-  // controls.target.z += 50;
-
+export const render = () => {
   renderer.render(scene, camera);
   controls.update();
 };
