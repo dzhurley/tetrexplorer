@@ -95,5 +95,3 @@ export const setTrailFace = (face, scene) => {
 
   scene.add(piece);
 };
-
-window.tetra = tetra;

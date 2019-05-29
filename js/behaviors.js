@@ -104,7 +104,7 @@ export const flip = mesh => {
   const start = activePivot.quaternion.clone();
   endObject.quaternion.copy(start);
   // all pivots are rotated such that 'up' points along a tetra edge
-  endObject.rotateOnAxis(activePivot.up, randomBetween(16, 22) * 0.1);
+  endObject.rotateOnAxis(activePivot.up, randomBetween(14, 24) * 0.1);
 
   let o = { t: 0 };
   new Tween(o)
