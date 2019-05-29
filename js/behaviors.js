@@ -7,7 +7,7 @@ import {
 import { Easing, Tween } from '../web_modules/es6-tween.js';
 
 import { scene } from './setup.js';
-import { pivots, setTarget, setTrailFace, tetra } from './meshes.js';
+import { pivots, randomBetween, setTarget, setTrailFace, tetra } from './meshes.js';
 
 let keyPressed = false;
 let flipping = false;
@@ -82,7 +82,17 @@ const findTrailFace = () => {
   if (!activePivot) {
     return tetra.geometry.faces[0];
   }
-  return tetra.geometry.faces[Math.floor(Math.random() * 4)];
+
+  // only choose from pivots that connect to the last trail piece
+  const [first, second] = activePivot.userData.vertices;
+  return tetra.geometry.faces.find((face, index) => {
+    if (tetra.userData.lastTrailFace === index) {
+      return false;
+    }
+    const { a, b, c } = face;
+    const vertices = [a, b, c];
+    return vertices.includes(first) && vertices.includes(second);
+  });
 };
 
 export const addTrail = () => setTrailFace(findTrailFace(), scene);
@@ -94,7 +104,7 @@ export const flip = mesh => {
   const start = activePivot.quaternion.clone();
   endObject.quaternion.copy(start);
   // all pivots are rotated such that 'up' points along a tetra edge
-  endObject.rotateOnAxis(activePivot.up, Math.PI - Math.acos(1 / 3));
+  endObject.rotateOnAxis(activePivot.up, randomBetween(16, 22) * 0.1);
 
   let o = { t: 0 };
   new Tween(o)

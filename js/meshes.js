@@ -10,7 +10,7 @@ import {
   Vector3,
 } from '../web_modules/three-full.js';
 
-const randomBetween = (min, max) => {
+export const randomBetween = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
