@@ -9,22 +9,24 @@ import { Easing, Tween } from '../web_modules/es6-tween.js';
 import { scene } from './setup.js';
 import { pivots, randomBetween, setTarget, setTrailFace, tetra } from './meshes.js';
 
-let keyPressed = false;
+import { knobs } from './gui.js';
+
 let flipping = false;
 
-export const atRest = () => !flipping && keyPressed;
+export const atRest = () => !flipping && knobs.chaseTarget;
 
-window.addEventListener('keydown', evt => {
-  if (evt.code === 'Space') {
-    keyPressed = true;
-  }
-  if (evt.code === 'ShiftLeft') {
-    setTarget(scene);
-  }
-}, false);
-window.addEventListener('keyup', () => keyPressed = false, false);
+window.addEventListener(
+  'keydown',
+  evt => evt.code === 'ShiftLeft' && setTarget(scene),
+  false,
+);
 
 let activePivot;
+
+const ruler = new Vector3();
+const targetDistance = (source, target) => {
+  return source.getWorldPosition(ruler).distanceTo(target.position);
+};
 
 const findActivePivot = () => {
   // only choose from pivots that connect to the last trail piece
@@ -40,17 +42,18 @@ const findActivePivot = () => {
 
   // find closest pivot to target to set as active
   const target = scene.getObjectByName('target');
-  const ruler = new Vector3();
-  const closest = choices.reduce((leader, choice) => {
-    if (!leader) {
-      return choice;
-    }
-    return (
-      leader.getWorldPosition(ruler).distanceTo(target.position) >
-      choice.getWorldPosition(ruler).distanceTo(target.position)
-    ) ? choice : leader;
-  });
-  return closest.clone();
+  const one = targetDistance(choices[0], target);
+  const two = targetDistance(choices[1], target);
+  const three = targetDistance(choices[2], target);
+
+  if (knobs.cycleTarget && [one, two, three].some(d => d < 25)) {
+    setTarget(scene);
+  }
+
+  const closest = Math.min(one, two, three);
+  if (one === closest) return choices[0].clone();
+  if (two === closest) return choices[1].clone();
+  return choices[2].clone();
 };
 
 const setPivotPoint = mesh => {
@@ -104,11 +107,14 @@ export const flip = mesh => {
   const start = activePivot.quaternion.clone();
   endObject.quaternion.copy(start);
   // all pivots are rotated such that 'up' points along a tetra edge
-  endObject.rotateOnAxis(activePivot.up, randomBetween(14, 24) * 0.1);
+  endObject.rotateOnAxis(
+    activePivot.up,
+    randomBetween(14, 24) * 0.1,
+  );
 
   let o = { t: 0 };
   new Tween(o)
-    .to({ t: 1 }, 200)
+    .to({ t: 1 }, 920 - knobs.chaseSpeed)
     .easing(Easing.Exponential.InOut)
     .on('update', () => {
       Quaternion.slerp(start, endObject.quaternion, activePivot.quaternion, o.t);

@@ -5,6 +5,8 @@ import {
   WebGLRenderer
 } from '../web_modules/three-full.js';
 
+import { knobs } from './gui.js';
+
 let screenWidth = window.innerWidth;
 let screenHeight = window.innerHeight;
 let aspect = screenWidth / screenHeight;
@@ -32,10 +34,14 @@ const onWindowResize = () => {
 window.addEventListener('resize', onWindowResize, false);
 
 export const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableKeys = false;
+controls.zoomSpeed = 0.5;
 controls.minDistance = 15;
 controls.maxDistance = 500;
+controls.autoRotateSpeed = 0.5;
 
 export const render = () => {
   renderer.render(scene, camera);
+  controls.autoRotate = knobs.autoRotate;
   controls.update();
 };

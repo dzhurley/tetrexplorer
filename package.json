@@ -8,6 +8,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "dat.gui": "0.7.6",
     "es6-tween": "5.5.10",
     "three-full": "17.1.0"
   },

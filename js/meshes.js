@@ -10,10 +10,13 @@ import {
   Vector3,
 } from '../web_modules/three-full.js';
 
+import { Easing, Tween } from '../web_modules/es6-tween.js';
+
 export const randomBetween = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+let targeting = false;
 export const setTarget = scene => {
   let target = scene.getObjectByName('target');
   if (!target) {
@@ -24,9 +27,22 @@ export const setTarget = scene => {
     target.name = 'target';
     scene.add(target);
   }
-  target.position.x = Math.random() > 0.5 ? randomBetween(80, 120) : randomBetween(-80, -120);
-  target.position.y = Math.random() > 0.5 ? randomBetween(80, 120) : randomBetween(-80, -120);
-  target.position.z = Math.random() > 0.5 ? randomBetween(80, 120) : randomBetween(-80, -120);
+
+  if (targeting) return;
+
+  targeting = true;
+  const newPosition = {
+    x: Math.random() > 0.5 ? randomBetween(80, 120) : randomBetween(-80, -120),
+    y: Math.random() > 0.5 ? randomBetween(80, 120) : randomBetween(-80, -120),
+    z: Math.random() > 0.5 ? randomBetween(80, 120) : randomBetween(-80, -120),
+  };
+  new Tween(target.position)
+    .to(newPosition, 600)
+    .easing(Easing.Exponential.InOut)
+    .on('complete', () => {
+      targeting = false;
+    })
+    .start();
 };
 
 export const tetra = new Mesh(
