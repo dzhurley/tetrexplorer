@@ -1,50 +1,68 @@
 import {
-  DoubleSide,
-  Mesh,
-  MeshNormalMaterial,
   Object3D,
   Quaternion,
   SceneUtils,
+  Vector3,
 } from '../web_modules/three-full.js';
 import { Easing, Tween } from '../web_modules/es6-tween.js';
 
 import { scene } from './setup.js';
-import { tetra } from './meshes.js';
+import { pivots, setTarget, setTrailFace, tetra } from './meshes.js';
 
-let keyPressed = '';
+let keyPressed = false;
 let flipping = false;
 
-// corresponds to each edge on tetra
-const keyMapping = {
-  'Digit1': 'pivot-0,1', // red
-  'Digit2': 'pivot-0,2', // green
-  'Digit3': 'pivot-0,3', // blue
-  'Digit4': 'pivot-1,2', // yellow
-  'Digit5': 'pivot-1,3', // magenta
-  'Digit6': 'pivot-2,3', // cyan
-};
-
-export const atRest = () => !flipping && keyPressed.length;
+export const atRest = () => !flipping && keyPressed;
 
 window.addEventListener('keydown', evt => {
-  if (evt.code in keyMapping) {
-    keyPressed = evt.code;
+  if (evt.code === 'Space') {
+    keyPressed = true;
+  }
+  if (evt.code === 'ShiftLeft') {
+    setTarget(scene);
   }
 }, false);
-window.addEventListener('keyup', () => keyPressed = '', false);
+window.addEventListener('keyup', () => keyPressed = false, false);
 
 let activePivot;
 
-const setPivotPoint = (mesh, lastKey) => {
+const findActivePivot = () => {
+  // only choose from pivots that connect to the last trail piece
+  const { a, b, c } = tetra.geometry.faces[tetra.userData.lastTrailFace];
+  const vertices = [a, b, c];
+  const choices = pivots.reduce((found, p) => {
+    const [first, second] = p.userData.vertices;
+    if (vertices.includes(first) && vertices.includes(second)) {
+      found.push(p);
+    }
+    return found;
+  }, []);
+
+  // find closest pivot to target to set as active
+  const target = scene.getObjectByName('target');
+  const ruler = new Vector3();
+  const closest = choices.reduce((leader, choice) => {
+    if (!leader) {
+      return choice;
+    }
+    return (
+      leader.getWorldPosition(ruler).distanceTo(target.position) >
+      choice.getWorldPosition(ruler).distanceTo(target.position)
+    ) ? choice : leader;
+  });
+  return closest.clone();
+};
+
+const setPivotPoint = mesh => {
   if (flipping) {
     removeFromPivot();
   }
   flipping = true;
 
+  activePivot = findActivePivot();
   // as all pivots are children of the tetra, copy the position/rotation
   // of the chosen pivot into a new parent of the tetra that can be tweened
   // to move the tetra and all pivots as one
-  activePivot = scene.getObjectByName(keyMapping[lastKey]).clone();
   activePivot.position.setFromMatrixPosition(activePivot.matrixWorld);
   activePivot.quaternion.setFromRotationMatrix(activePivot.matrixWorld);
   activePivot.updateMatrixWorld();
@@ -60,21 +78,18 @@ const removeFromPivot = mesh => {
   }
 };
 
-const addTrail = () => {
-  const piece = new Mesh(
-    tetra.geometry.clone(),
-    tetra.material.clone(),
-  );
-  piece.material.wireframe = true;
-  piece.position.setFromMatrixPosition(tetra.matrixWorld);
-  piece.quaternion.setFromRotationMatrix(tetra.matrixWorld);
-  scene.add(piece);
+const findTrailFace = () => {
+  if (!activePivot) {
+    return tetra.geometry.faces[0];
+  }
+  return tetra.geometry.faces[Math.floor(Math.random() * 4)];
 };
+
+export const addTrail = () => setTrailFace(findTrailFace(), scene);
 
 const endObject = new Object3D();
 export const flip = mesh => {
-  const lastKey = keyPressed;
-  setPivotPoint(mesh, lastKey);
+  setPivotPoint(mesh);
 
   const start = activePivot.quaternion.clone();
   endObject.quaternion.copy(start);
@@ -83,8 +98,8 @@ export const flip = mesh => {
 
   let o = { t: 0 };
   new Tween(o)
-    .to({ t: 1 }, 500)
-    .easing(Easing.Bounce.Out)
+    .to({ t: 1 }, 200)
+    .easing(Easing.Exponential.InOut)
     .on('update', () => {
       Quaternion.slerp(start, endObject.quaternion, activePivot.quaternion, o.t);
     })

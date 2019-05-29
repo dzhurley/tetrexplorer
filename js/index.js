@@ -1,9 +1,9 @@
 import { update as updateTween } from '../web_modules/es6-tween.js';
 
 import { render, scene } from './setup.js';
-import { shape } from './meshes.js';
+import { setTarget, shape } from './meshes.js';
 
-import { flip, atRest } from './behaviors.js';
+import { addTrail, atRest, flip } from './behaviors.js';
 
 scene.add(shape);
 
@@ -16,4 +16,6 @@ const animate = time => {
   requestAnimationFrame(animate);
 };
 
+setTarget(scene);
+addTrail(scene);
 animate(0);
