@@ -15,12 +15,6 @@ let flipping = false;
 
 export const atRest = () => !flipping && knobs.chaseTarget;
 
-window.addEventListener(
-  'keydown',
-  evt => evt.code === 'ShiftLeft' && setTarget(scene),
-  false,
-);
-
 let activePivot;
 
 const ruler = new Vector3();
